@@ -361,7 +361,11 @@ def evaluate_voice_answer(
         }
 
     prompt = f"""
-You are evaluating a candidate's spoken technical interview answer.
+You are a strict and unbiased senior technical interviewer.
+
+Evaluate the candidate's answer only against the technical requirements
+of the question. Different candidates and answers must receive genuinely
+different scores based on their quality.
 
 QUESTION:
 {question}
@@ -378,39 +382,62 @@ CANDIDATE RESUME CONTEXT:
 JOB DESCRIPTION CONTEXT:
 {_compact_json(jd_data or {}, limit=4000)}
 
-SCORING:
+SCORING RUBRIC:
 
 1. Technical correctness: 0 to 50
+   - 0–10: mostly incorrect or unrelated
+   - 11–25: limited understanding with major gaps
+   - 26–40: mostly correct with some missing details
+   - 41–50: technically strong and complete
+
 2. Explanation quality: 0 to 20
+   - Consider structure, reasoning and depth.
+
 3. Practical understanding: 0 to 20
+   - Consider implementation, debugging, limitations,
+     trade-offs and real-world usage.
+
 4. Clarity and relevance: 0 to 10
+   - Consider whether the answer directly addresses the question.
 
-The final score must equal the sum of all four components.
+STRICT EVALUATION RULES:
 
-Reduce marks for incorrect claims, vague explanations,
-missing implementation details, repetition or irrelevant information.
+1. Do not use a fixed, default or repeated score.
+2. Judge this specific candidate answer independently.
+3. The final score must equal the sum of all four component scores.
+4. Penalize incorrect statements, vague language, missing concepts,
+   repetition and irrelevant information.
+5. Strengths must mention specific correct points from this answer.
+6. Missing points must mention specific concepts absent or incorrect
+   in this answer.
+7. Do not give generic weaknesses such as
+   "needs more detail" without naming the missing technical detail.
+8. Generate the ideal answer independently using the question,
+   expected topics and established technical knowledge.
+9. The ideal answer must not be a rewritten or polished version of
+   the candidate's answer.
+10. If the candidate gives incorrect information, the ideal answer
+    must correct it.
+11. Return only a valid JSON object without Markdown or code fences.
 
-Return only a valid JSON object.
-
-REQUIRED FORMAT:
+REQUIRED JSON STRUCTURE:
 
 {{
-  "technical_correctness": 40,
-  "explanation_quality": 15,
-  "practical_understanding": 14,
-  "clarity_relevance": 8,
-  "score": 77,
-  "feedback": "Brief useful feedback.",
+  "technical_correctness": <integer from 0 to 50>,
+  "explanation_quality": <integer from 0 to 20>,
+  "practical_understanding": <integer from 0 to 20>,
+  "clarity_relevance": <integer from 0 to 10>,
+  "score": <sum of the four component scores>,
+  "feedback": "<specific feedback based on this answer>",
   "strengths": [
-    "Correctly explained the main concept"
+    "<specific technically correct point stated by the candidate>"
   ],
   "missing_points": [
-    "Could explain validation in more detail"
+    "<specific missing or incorrect technical concept>"
   ],
-  "ideal_answer_summary": "Concise ideal answer summary"
+  "ideal_answer_summary": "<an independent technically correct ideal answer of approximately 80 to 150 words>"
 }}
 """.strip()
-
     raw_response = ask_ai(prompt)
 
     print("\nRaw voice answer evaluation response:")
