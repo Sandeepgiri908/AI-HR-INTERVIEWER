@@ -1,0 +1,18 @@
+Collecting groq
+easyocr
+pillow
+pdfplumber
+python-docx
+streamlit
+python-dotenv
+groq
+supabase
+pandas
+numpy
+plotly
+PyPDF2
+pdfplumber
+python-docx
+Pillow
+SpeechRecognition
+streamlit-mic-recorder
