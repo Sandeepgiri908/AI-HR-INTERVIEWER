@@ -1,12 +1,7 @@
-Collecting groq
-easyocr
-pillow
-pdfplumber
-python-docx
 streamlit
-python-dotenv
 groq
 supabase
+python-dotenv
 pandas
 numpy
 plotly
@@ -16,3 +11,7 @@ python-docx
 Pillow
 SpeechRecognition
 streamlit-mic-recorder
+PyMuPDF
+scikit-learn
+soundfile
+pydub
