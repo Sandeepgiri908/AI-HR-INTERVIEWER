@@ -254,34 +254,44 @@ elif page == "Candidate Screening":
     # --------------------------------------------------------
 
     if uploaded_resume is not None:
-        try:
-            resume_path = save_uploaded_file(
-                uploaded_resume,
-                prefix="resume_"
-            )
+    try:
+        import os
+        import tempfile
 
-            resume_text = extract_resume_text(resume_path)
+        file_extension = os.path.splitext(uploaded_resume.name)[1]
 
-            if resume_text and resume_text.strip():
-                st.session_state["resume_text"] = resume_text
-                st.success("Resume uploaded and text extracted successfully.")
-            else:
-                st.session_state["resume_text"] = ""
-                st.error("No readable text could be extracted from the resume.")
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=file_extension
+        ) as temp_file:
+            temp_file.write(uploaded_resume.getbuffer())
+            resume_path = temp_file.name
 
-        except Exception as error:
+        resume_text = extract_resume_text(resume_path)
+
+        if os.path.exists(resume_path):
+            os.remove(resume_path)
+
+        if resume_text and resume_text.strip():
+            st.session_state["resume_text"] = resume_text
+            st.success("Resume uploaded and text extracted successfully.")
+        else:
             st.session_state["resume_text"] = ""
-            st.error(f"Resume extraction failed: {error}")
+            st.error("No readable text could be extracted from the resume.")
 
-    if st.session_state.get("resume_text"):
-        with st.expander("View extracted resume text"):
-            st.text_area(
-                "Extracted Resume",
-                value=st.session_state["resume_text"],
-                height=300,
-                disabled=True,
-                label_visibility="collapsed"
-            )
+    except Exception as error:
+        st.session_state["resume_text"] = ""
+        st.error(f"Resume extraction failed: {error}")
+
+if st.session_state.get("resume_text"):
+    with st.expander("View extracted resume text"):
+        st.text_area(
+            "Extracted Resume",
+            value=st.session_state["resume_text"],
+            height=300,
+            disabled=True,
+            label_visibility="collapsed"
+        )
 
     # --------------------------------------------------------
     # Buttons
