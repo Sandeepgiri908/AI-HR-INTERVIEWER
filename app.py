@@ -151,8 +151,8 @@ page = st.sidebar.radio(
         "Candidate Screening",
         "MCQ Round",
         "AI Voice Interview",
-        "HR Dashboard",
-        "Interview History"
+        #"HR Dashboard",
+        #"Interview History"
     ]
 )
 
